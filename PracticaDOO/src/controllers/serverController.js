@@ -5,15 +5,15 @@ class ServerController {
     }
 
     //Obtiene todos los registros de la colección de la base de datos NoSQL
-    getAllUsers(req, res) {
-        person.find((error, data) => {
-            if (error) {
-                res.status(500).send();
-            } else {
-                res.status(200).json(data);
-            }
-        })
+    async getAllUsers(req, res) {
+        try {
+            const data = await person.find();  // Await the promise returned by .find()
+            res.status(200).json(data);
+        } catch (error) {
+            res.status(500).send({ error: "Error retrieving users from the database" });
+        }
     }
+
 
     //Obtiene el registro según el id que le estemos pasando a la colección de la base de datos NoSQL
     getUsers(req, res) {
