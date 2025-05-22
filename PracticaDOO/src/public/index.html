@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Gestión de usuarios</h1>
+
+    <button onclick="obtenerUsuarios()">Ver todos los usuarios</button>
+    <pre id="salida"></pre>
+
+    <h2>Crear usuario</h2>
+    <input placeholder="Nombre" id="nombre">
+    <input placeholder="Apellido" id="apellido">
+    <input placeholder="Edad" id="edad">
+    <input placeholder="Email" id="email">
+    <button onclick="crearUsuario()">Crear</button>
+    
+    <script>
+        const URL = "https://special-palm-tree-wrvq767w496q29prp-3000.app.github.dev/users";
+
+        function obtenerUsuarios() {
+            fetch(URL)
+            .then(Response => Response.json)
+            .then(data => document.getElementById('salida').textContent = JSON.stringify(data, null,2));
+        }
+    </script>
+</body>
+</html>

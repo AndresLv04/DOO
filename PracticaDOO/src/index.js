@@ -1,5 +1,6 @@
 //Importar express
 const express = require('express');
+const app = express();
 const serverRouter = require('./routers/serverRouter');
 //Importar mongoose
 const mongoose = require('mongoose');
@@ -7,6 +8,7 @@ const mongoose = require('mongoose');
 const database = require('./database/db');
 //Importar cors
 const cors = require('cors');
+
 
 class Server {
     constructor() {
