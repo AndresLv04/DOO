@@ -15,6 +15,7 @@ class Server {
         this.conectarBD();
         this.app = express();
         this.app.set('port', process.env.PORT || 3000);
+        this.app.use(express.static(__dirname))
         //Indicar que las solicitudes http se trabajará en JSON
         this.app.use(express.json());
         this.app.use(cors());

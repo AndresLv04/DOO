@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1>Gestión de usuarios</h1>
+
+    <button onclick="obtenerUsuarios()">Ver todos los usuarios</button>
+    <pre id="salida"></pre>
+
+    <h2>Buscar usuario por ID</h2>
+    <input placeholder="ID del usuario" id="buscarUsuario">
+    <button onclick="buscarUsuario()">Buscar</button>
+    <pre id="usuario"></pre>
+
+    <h2>Eliminar usuario</h2>
+    <input placeholder="ID del usuario" id="buscarUsuarioEliminar">
+    <button onclick="eliminarUsuario()">Eliminar</button>
+
+    <h2>Crear usuario</h2>
+    <input placeholder="Nombre" id="nombre">
+    <input placeholder="Apellido" id="apellido">
+    <input placeholder="Edad" id="edad">
+    <input placeholder="Email" id="email">
+    <button onclick="registrarUsuario()">Crear</button>
+
+    <h2>Actualizar usuario</h2>
+    <input placeholder="ID del usuario" id="inputUsuarioActualizar">
+    <button onclick="buscarUsuarioActualizar()">Buscar</button>
+    <br><br>
+    <input placeholder="Nombre" id="updateNombre">
+    <input placeholder="Apellido" id="updateApellido">
+    <input placeholder="Edad" id="updateEdad">
+    <input placeholder="Email" id="updateEmail">
+    <button onclick="actualizarUsuario()">Actualizar</button>
+
+    <script>
+        const URL = "https://special-palm-tree-wrvq767w496q29prp-3000.app.github.dev/users";
+
+        function obtenerUsuarios() {
+            if (salida.textContent.trim() !== "") {
+                salida.textContent = ""
+            } else {
+                fetch(URL, {
+                    method: 'GET'
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('salida').textContent = JSON.stringify(data, null, 2);
+                    })
+            }
+        }
+
+        function buscarUsuario() {
+            const id = document.getElementById('buscarUsuario').value;
+            fetch(`${URL}/${id}`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById("usuario").textContent = JSON.stringify(data, null, 2);
+                })
+        }
+
+        function eliminarUsuario() {
+            const id = document.getElementById('buscarUsuarioEliminar').value;
+            fetch(`${URL}/${id}`, {
+                method: 'DELETE'
+            })
+                .then(res => res.json())
+                .then(data => alert(data.message));
+        }
+
+        function registrarUsuario() {
+            const datos = {
+                nombre: document.getElementById('nombre').value,
+                apellido: document.getElementById('apellido').value,
+                edad: document.getElementById('edad').value,
+                email: document.getElementById('email').value
+            };
+            fetch(URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/JSON' },
+                body: JSON.stringify(datos)
+
+            })
+                .then(response => response.json())
+                .then(data => alert("Usuario agregado exitosamente..."))
+        }
+
+        function buscarUsuarioActualizar() {
+            const id = document.getElementById('inputUsuarioActualizar').value;
+            fetch(`${URL}/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Rellena los inputs con los datos del usuario
+                    document.getElementById('updateNombre').value = data.nombre;
+                    document.getElementById('updateApellido').value = data.apellido;
+                    document.getElementById('updateEdad').value = data.edad;
+                    document.getElementById('updateEmail').value = data.email;
+                });
+        }
+
+        function actualizarUsuario() {
+            const id = document.getElementById('inputUsuarioActualizar').value;
+            const datosActualizados = {
+                nombre: document.getElementById('updateNombre').value,
+                apellido: document.getElementById('updateApellido').value,
+                edad: document.getElementById('updateEdad').value,
+                email: document.getElementById('updateEmail').value
+            };
+            fetch(`${URL}/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datosActualizados)
+            })
+                .then(response => response.json())
+                .then(data => alert("Usuario actualizado..."))
+        }
+
+
+
+    </script>
+</body>
+
+</html>
