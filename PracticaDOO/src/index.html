@@ -4,40 +4,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
     <title>Document</title>
 </head>
 
 <body>
     <h1>Gestión de usuarios</h1>
 
-    <button onclick="obtenerUsuarios()">Ver todos los usuarios</button>
-    <pre id="salida"></pre>
+    <div class="container">
+        <button onclick="obtenerUsuarios()">Ver todos los usuarios</button>
+        <pre id="salida"></pre>
 
-    <h2>Buscar usuario por ID</h2>
-    <input placeholder="ID del usuario" id="buscarUsuario">
-    <button onclick="buscarUsuario()">Buscar</button>
-    <pre id="usuario"></pre>
+        <h2>Buscar usuario por ID</h2>
+        <input placeholder="ID del usuario" id="buscarUsuario">
+        <button onclick="buscarUsuario()">Buscar</button>
+        <pre id="usuario"></pre>
+        <p id="estadoBuscarID" class="estado"></p>
 
-    <h2>Eliminar usuario</h2>
-    <input placeholder="ID del usuario" id="buscarUsuarioEliminar">
-    <button onclick="eliminarUsuario()">Eliminar</button>
+        <h2>Eliminar usuario</h2>
+        <input placeholder="ID del usuario" id="buscarUsuarioEliminar">
+        <button onclick="eliminarUsuario()">Eliminar</button>
+        <p id="estadoEliminarID" class="estado"></p>
+        <p id="mensajeEliminar" class="mensaje"></p>
 
-    <h2>Crear usuario</h2>
-    <input placeholder="Nombre" id="nombre">
-    <input placeholder="Apellido" id="apellido">
-    <input placeholder="Edad" id="edad">
-    <input placeholder="Email" id="email">
-    <button onclick="registrarUsuario()">Crear</button>
 
-    <h2>Actualizar usuario</h2>
-    <input placeholder="ID del usuario" id="inputUsuarioActualizar">
-    <button onclick="buscarUsuarioActualizar()">Buscar</button>
-    <br><br>
-    <input placeholder="Nombre" id="updateNombre">
-    <input placeholder="Apellido" id="updateApellido">
-    <input placeholder="Edad" id="updateEdad">
-    <input placeholder="Email" id="updateEmail">
-    <button onclick="actualizarUsuario()">Actualizar</button>
+        <h2>Crear usuario</h2>
+
+        <input placeholder="Nombre" id="nombre">
+        <input placeholder="Apellido" id="apellido">
+        <input placeholder="Edad" id="edad">
+        <input placeholder="Email" id="email">
+        <button onclick="registrarUsuario()" class="boton">Crear</button>
+        <p id="estadoCrearID" class="estado"></p>
+        <p id="mensajeCrear" class="mensaje"></p>
+
+        <h2>Actualizar usuario</h2>
+        <input placeholder="ID del usuario" id="inputUsuarioActualizar">
+        <button onclick="buscarUsuarioActualizar()">Buscar</button>
+        <p id="estadoActualizarID" class="estado"></p>
+        <p id="mensajeActu" class="mensaje"></p>
+        <br><br>
+        <input placeholder="Nombre" id="updateNombre">
+        <input placeholder="Apellido" id="updateApellido">
+        <input placeholder="Edad" id="updateEdad">
+        <input placeholder="Email" id="updateEmail">
+        <button onclick="actualizarUsuario()" class="boton">Actualizar</button>
+        <p id="estadoActualizarID" class="estado"></p>
+        <p id="mensajeActualizar" class="mensaje"></p>
+
+    </div>
 
     <script>
         const URL = "https://special-palm-tree-wrvq767w496q29prp-3000.app.github.dev/users";
@@ -59,10 +74,17 @@
         function buscarUsuario() {
             const id = document.getElementById('buscarUsuario').value;
             fetch(`${URL}/${id}`)
-                .then(res => res.json())
+                .then(res => {
+                    document.getElementById("estadoBuscarID").textContent = `Status: ${res.status}`;
+                    if (!res.ok) throw new Error("Error al buscar usuario");
+                    return res.json();
+                })
                 .then(data => {
                     document.getElementById("usuario").textContent = JSON.stringify(data, null, 2);
                 })
+                .catch(error => {
+                    document.getElementById("usuario").textContent = "Error: " + error.message;
+                });
         }
 
         function eliminarUsuario() {
@@ -70,9 +92,20 @@
             fetch(`${URL}/${id}`, {
                 method: 'DELETE'
             })
-                .then(res => res.json())
-                .then(data => alert(data.message));
+                .then(res => {
+                    document.getElementById("estadoEliminarID").textContent = `Status: ${res.status}`;
+                    if (!res.ok) throw new Error("No se pudo eliminar el usuario");
+                    return res.json();
+                })
+                .then(data => {
+                    document.getElementById("mensajeEliminar").textContent = data.message;
+                })
+                .catch(error => {
+                    document.getElementById("mensajeEliminar").textContent = `Error: ${error.message}`;
+                });
         }
+
+
 
         function registrarUsuario() {
             const datos = {
@@ -81,28 +114,46 @@
                 edad: document.getElementById('edad').value,
                 email: document.getElementById('email').value
             };
+
             fetch(URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/JSON' },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(datos)
-
             })
-                .then(response => response.json())
-                .then(data => alert("Usuario agregado exitosamente..."))
+                .then(res => {
+                    document.getElementById("estadoCrearID").textContent = `Status: ${res.status}`;
+                    if (!res.ok) throw new Error("No se pudo registrar el usuario");
+                    return res.json();
+                })
+                .then(data => {
+                    document.getElementById("mensajeCrear").textContent = "Usuario agregado exitosamente.";
+                })
+                .catch(error => {
+                    document.getElementById("mensajeCrear").textContent = `Error: ${error.message}`;
+                });
         }
+
 
         function buscarUsuarioActualizar() {
             const id = document.getElementById('inputUsuarioActualizar').value;
             fetch(`${URL}/${id}`)
-                .then(response => response.json())
+                .then(res => {
+                    document.getElementById("estadoActualizarID").textContent = `Status: ${res.status}`;
+                    if (!res.ok) throw new Error("No se encontró el usuario");
+                    return res.json();
+                })
                 .then(data => {
-                    // Rellena los inputs con los datos del usuario
                     document.getElementById('updateNombre').value = data.nombre;
                     document.getElementById('updateApellido').value = data.apellido;
                     document.getElementById('updateEdad').value = data.edad;
                     document.getElementById('updateEmail').value = data.email;
+                    document.getElementById("mensajeActu").textContent = "Usuario encontrado.";
+                })
+                .catch(error => {
+                    document.getElementById("mensajeActu").textContent = `Error: ${error.message}`;
                 });
         }
+
 
         function actualizarUsuario() {
             const id = document.getElementById('inputUsuarioActualizar').value;
@@ -112,14 +163,25 @@
                 edad: document.getElementById('updateEdad').value,
                 email: document.getElementById('updateEmail').value
             };
+
             fetch(`${URL}/${id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(datosActualizados)
             })
-                .then(response => response.json())
-                .then(data => alert("Usuario actualizado..."))
+                .then(res => {
+                    document.getElementById("estadoActualizarID").textContent = `Status: ${res.status}`;
+                    if (!res.ok) throw new Error("No se pudo actualizar el usuario");
+                    return res.json();
+                })
+                .then(data => {
+                    document.getElementById("mensajeActualizar").textContent = "Usuario actualizado exitosamente.";
+                })
+                .catch(error => {
+                    document.getElementById("mensajeActualizar").textContent = `Error: ${error.message}`;
+                });
         }
+
 
 
 
